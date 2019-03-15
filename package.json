@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "axios": "^0.18.0",
+    "bitbox-sdk": "^5.0.0",
     "chalk": "^2.3.2",
     "compression": "1.7.3",
     "cross-env": "5.2.0",
@@ -40,6 +42,7 @@
     "lodash": "4.17.11",
     "minimist": "1.2.0",
     "prop-types": "^15.6.2",
+    "qrcode-react": "^0.1.16",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-helmet": "^5.2.0",
@@ -52,6 +55,7 @@
     "redux-saga": "0.16.2",
     "reselect": "4.0.0",
     "sanitize.css": "8.0.0",
+    "socket.io": "^2.1.1",
     "warning": "^4.0.1",
     "whatwg-fetch": "2.0.4"
   },

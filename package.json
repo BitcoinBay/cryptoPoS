@@ -43,6 +43,7 @@
     "minimist": "1.2.0",
     "prop-types": "^15.6.2",
     "qrcode-react": "^0.1.16",
+    "rc-input-number": "^4.4.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-helmet": "^5.2.0",

@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import axios from 'axios';
 import QRCode from 'qrcode-react';
 
 import './style.scss';
@@ -23,17 +24,19 @@ export default class Cashier extends React.Component {
     }
   }
 
-  handleClick = (value) => {
-    if (typeof value !== number || value === 0) {
-      return;
+  handleClick(event) {
+    let payAmount = parseFloat(event.target.value);
+    if (typeof payAmount !== "number" || payAmount === 0) {
+      this.setState({ fiatAmount: 0 });
     }
-    this.setState({ fiatAmount: value });
+    this.setState({ fiatAmount: payAmount });
   }
 
   updatePrices = () => {
     axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH,LTC&tsyms=${this.state.fiatType}&api_key={${api_key}}`)
       .then((res) => {
-        this.setState({ cryptoPrice: res.data.BCH})
+        //console.log(res.data.BCH.CAD);
+        this.setState({ cryptoPrice: res.data.BCH.CAD});
       })
   }
 
@@ -48,8 +51,9 @@ export default class Cashier extends React.Component {
           />
         </Helmet>
         <div>
-          <QRCode value="1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX"/>
-          <button onClick={() => {this.updatePrices}}>Price</button>
+          <QRCode value="1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX" />
+          <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
+          <button onClick={this.updatePrices}>Price</button>
           <p>{this.state.cryptoPrice}</p>
           <p>{this.state.fiatAmount}</p>
         </div>

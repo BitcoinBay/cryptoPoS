@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
 
 import Cashier from 'containers/Cashier/Loadable';
+import Customer from 'containers/Customer/Loadable';
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
@@ -30,6 +31,7 @@ const App = () => (
     <Switch>
       <Route exact path="/" component={HomePage} />
       <Route path="/cashier" component={Cashier} />
+      <Route path="/customer" component={Customer} />
       <Route path="/features" component={FeaturePage} />
       <Route path="" component={NotFoundPage} />
     </Switch>

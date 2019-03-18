@@ -9,6 +9,8 @@ const port = require('./util//port');
 const setup = require('./middlewares/frontendMiddleware');
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -25,9 +27,20 @@ const host = customHost || null; // Let http.Server use its default IPv6/4 host
 const prettyHost = customHost || 'localhost';
 
 // Start your app.
-app.listen(port, host, (err) => {
+http.listen(port, host, (err) => {
   if (err) {
     return logger.error(err.message);
   }
   logger.appStarted(port, prettyHost);
+});
+
+io.on('connection', (socket) => {
+  console.log('user connected');
+  socket.on('event', (msg) => {
+    console.log(msg);
+    io.emit('event', msg);
+  });
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
 });

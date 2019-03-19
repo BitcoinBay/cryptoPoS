@@ -58,18 +58,15 @@ export default class Customer extends React.Component {
             </div>
           )
         }
-        <h4>Price</h4>
         <p>
           {this.state.fiatType}
         </p>
         <p>
           {this.state.price}
         </p>
-        <h4>BCH</h4>
         <p>
           {this.state.amountC}
         </p>
-        <h4>CAD</h4>
         <p>
           {this.state.amountF}
         </p>

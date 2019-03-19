@@ -8,7 +8,7 @@ import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import openSocket from 'socket.io-client';
 import * as BITBOXCli from "bitbox-sdk";
-const BITBOX = new BITBOXCli.default()
+const BITBOX = new BITBOXCli.default({ restURL: "https://trest.bitcoin.com/v2/" });
 
 import Bip21 from '../../components/Bip21';
 import './style.scss';
@@ -62,7 +62,7 @@ export default class Cashier extends React.Component {
       .then((res) => {
         //console.log(res.data.BCH.CAD);
         this.setState({ cryptoPrice: res.data.BCH.CAD});
-      })
+      });
   }
 
   render() {

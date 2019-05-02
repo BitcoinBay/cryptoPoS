@@ -10,7 +10,7 @@ import openSocket from 'socket.io-client';
 import * as BITBOXCli from "bitbox-sdk";
 const BITBOX = new BITBOXCli.default({ restURL: "https://trest.bitcoin.com/v2/" });
 
-import Bip21 from '../../components/Bip21';
+import QRAddress21 from '../../components/QRAddress21';
 import './style.scss';
 
 const socket = openSocket('http://localhost:3000');
@@ -58,7 +58,7 @@ export default class Cashier extends React.Component {
   }
 
   updatePrices() {
-    axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH,LTC&tsyms=${this.state.fiatType}&api_key={${api_key}}`)
+    axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH&tsyms=USD,EUR,CAD&api_key={${api_key}}`)
       .then((res) => {
         //console.log(res.data.BCH.CAD);
         this.setState({ cryptoPrice: res.data.BCH.CAD});
@@ -70,8 +70,8 @@ export default class Cashier extends React.Component {
       amount: this.state.cryptoAmount,
       label: '#BitcoinBay',
     };
-    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "14");
-    let payBip21 = BITBOX.BitcoinCash.encodeBIP21(XPubAddress, options);
+    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "1");
+    let payQRAddress21 = BITBOX.BitcoinCash.encodeBIP21(XPubAddress, options);
 
     return (
       <div className="feature-page">
@@ -83,10 +83,10 @@ export default class Cashier extends React.Component {
           />
         </Helmet>
         <div>
-          <Bip21 value={payBip21}/>
+          <QRAddress21 value={payQRAddress21}/>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
           <button onClick={this.updatePrices}>Update Price</button>
-          <button type="button" onClick={() => this.sendSocketIO([this.state.fiatType, this.state.cryptoPrice, this.state.fiatAmount, this.state.cryptoAmount, payBip21])}>
+          <button type="button" onClick={() => this.sendSocketIO([this.state.fiatType, this.state.cryptoPrice, this.state.fiatAmount, this.state.cryptoAmount, payQRAddress21])}>
             Pay Now
           </button>
           <p>{this.state.cryptoPrice}</p>

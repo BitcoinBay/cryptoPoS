@@ -8,7 +8,7 @@ import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import openSocket from 'socket.io-client';
 
-import Bip21 from '../../components/Bip21';
+import QRAddress21 from '../../components/QRAddress21';
 import './style.scss';
 
 const socket = openSocket('http://localhost:3000');
@@ -51,10 +51,10 @@ export default class Customer extends React.Component {
           <meta name="description" content="CashierPOS Page" />
         </Helmet>
         { this.state.url === ''
-          ? <Bip21 value={defaultWebURL} />
+          ? <QRAddress21 value={defaultWebURL} />
           : (
             <div>
-              <Bip21 value={this.state.url} />
+              <QRAddress21 value={this.state.url} />
             </div>
           )
         }

@@ -10,15 +10,50 @@ import { Helmet } from 'react-helmet';
 import ReposList from 'components/ReposList';
 import './style.scss';
 
+let SLPSDK = require("slp-sdk");
+let SLP = new SLPSDK();
+
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  /**
-   * when initial state username is not null, submit the form to load repos
-   */
+  constructor(props) {
+    super(props);
+    this.state = {
+       tokens: []
+    };
+  }
+
   componentDidMount() {
     const { username, onSubmitForm } = this.props;
     if (username && username.trim().length > 0) {
       onSubmitForm();
     }
+
+    (async () => {
+      try {
+        let list = await SLP.Utils.list();
+        let fin = [];
+        console.log(list[1]);
+        list.forEach(token => {
+          let path = "https://explorer.bitcoin.com/bch/tx/" + token.id;
+          fin.push(
+            <li>
+              <a href={path} target="_blank">
+                {token.name !== "" ? token.name : token.id}
+              </a>
+              <ul>
+                {token.symbol} <br />
+                {token.circulatingSupply} <br />
+                {token.blockCreated} <br />
+              </ul>
+            </li>
+          );
+        });
+        this.setState({
+          tokens: fin
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    })();
   }
 
   render() {
@@ -46,6 +81,8 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
           </section>
           <section>
             <h2>Try me!</h2>
+            <ul>SLP Tokens</ul>
+            <ul>{this.state.tokens}</ul>
             <form onSubmit={onSubmitForm}>
               <label htmlFor="username">
                 Show Github repositories by
@@ -53,7 +90,7 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
                 <input
                   id="username"
                   type="text"
-                  placeholder="flexdinesh"
+                  placeholder="BitcoinBay"
                   value={username}
                   onChange={onChangeUsername}
                 />

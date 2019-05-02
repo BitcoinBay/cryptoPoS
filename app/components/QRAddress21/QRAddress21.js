@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode-react';
 
-export default class Bip21 extends React.Component {
+export default class QRAddress21 extends React.Component {
   constructor(props) {
     super(props);
   }

@@ -12,8 +12,6 @@ import QRAddress21 from '../../components/QRAddress21';
 import './style.scss';
 
 const socket = openSocket('http://localhost:3000');
-const api_key = '897a2b25ccd5730323919dee1201a832e5d2bb9835e6ded08dd4897f7669e8f7'
-const XPubKey = "tpubDCoP9xnjhwkwC8pT7DVSPFDgbYb2uq2UAdY2DQmk2YtBpiEY8XGtT26P6NgYyc38fiuTF9x3MAtKmuUR2HPd7qKQmAYD5NTpfVy5SzZntWN";
 const defaultWebURL = 'https://www.meetup.com/The-Bitcoin-Bay';
 
 export default class Customer extends React.Component {

@@ -24,16 +24,22 @@ export default class Cashier extends React.Component {
     this.updatePrices = this.updatePrices.bind(this);
     this.calculateCryptoAmount = this.calculateCryptoAmount.bind(this);
     this.sendSocketIO = this.sendSocketIO.bind(this);
+    this.toggleCryptoType = this.toggleCryptoType.bind(this);
     this.state = {
+      jsonData: null,
       cryptoPrice: 0,
-      fiatAmount: 0,
       cryptoAmount: 0,
+      cryptoType: 'BCH',
+      fiatAmount: 0,
       fiatType: 'CAD'
     }
   }
 
   componentDidMount() {
     this.updatePrices();
+    setInterval(() => {
+      this.updatePrices();
+    }, 600000);
   }
 
   calculateCryptoAmount() {
@@ -57,11 +63,29 @@ export default class Cashier extends React.Component {
     socket.emit('event', msg);
   }
 
+  toggleCryptoType(e) {
+    this.setState({ cryptoType: e.target.value });
+    this.calculateCryptoAmount();
+    console.log(e.target.value);
+    switch(this.state.cryptoType) {
+      case 'BTC':
+        this.setState({ cryptoPrice: this.state.jsonData.BTC.CAD});
+        break;
+      case 'BCH':
+        this.setState({ cryptoPrice: this.state.jsonData.BCH.CAD});
+        break;
+      case 'ETH':
+        this.setState({ cryptoPrice: this.state.jsonData.ETH.CAD});
+        break;
+      default:
+        console.log('nothing');
+    }
+  }
+
   updatePrices() {
     axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH&tsyms=USD,EUR,CAD&api_key={${api_key}}`)
       .then((res) => {
-        //console.log(res.data.BCH.CAD);
-        this.setState({ cryptoPrice: res.data.BCH.CAD});
+        this.setState({ jsonData: res.data });
       });
   }
 
@@ -84,6 +108,11 @@ export default class Cashier extends React.Component {
         </Helmet>
         <div>
           <QRAddress21 value={payQRAddress21}/>
+          <select value={this.state.cryptoType} onChange={this.toggleCryptoType}>
+            <option value="BTC">BTC</option>
+            <option value="BCH">BCH</option>
+            <option value="ETH">ETH</option>
+          </select>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
           <button onClick={this.updatePrices}>Update Price</button>
           <button type="button" onClick={() => this.sendSocketIO([this.state.fiatType, this.state.cryptoPrice, this.state.fiatAmount, this.state.cryptoAmount, payQRAddress21])}>

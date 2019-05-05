@@ -18,11 +18,12 @@ export default class Customer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cryptoType: 'BCH',
       fiatType: 'CAD',
-      amountC: 0,
-      amountF: 0,
-      url: '',
-      price: 0,
+      cryptoAmount: 0,
+      fiatAmount: 0,
+      cryptoPrice: 0,
+      url: defaultWebURL,
     };
   }
 
@@ -33,11 +34,12 @@ export default class Customer extends React.Component {
   update(data) {
     console.log(data);
     this.setState({
-      fiatType: data[0],
-      price: data[1],
-      amountF: data[2],
-      amountC: data[3],
-      url: data[4],
+      cryptoType: data[0],
+      fiatType: data[1],
+      cryptoAmount: data[2],
+      fiatAmount: data[3],
+      cryptoPrice: data[4],
+      url: data[5],
     }, () => console.log(this.state));
   }
 
@@ -56,18 +58,9 @@ export default class Customer extends React.Component {
             </div>
           )
         }
-        <p>
-          {this.state.fiatType}
-        </p>
-        <p>
-          {this.state.price}
-        </p>
-        <p>
-          {this.state.amountC}
-        </p>
-        <p>
-          {this.state.amountF}
-        </p>
+        <p>$ {this.state.cryptoPrice} {this.state.fiatType} / {this.state.cryptoType}</p>
+        <p>{this.state.cryptoAmount} {this.state.cryptoType}</p>
+        <p>$ {this.state.fiatAmount} {this.state.fiatType}</p>
       </article>
     );
   }

@@ -27,11 +27,11 @@ export default class Cashier extends React.Component {
     this.toggleCryptoType = this.toggleCryptoType.bind(this);
     this.state = {
       jsonData: null,
-      cryptoPrice: 0,
-      cryptoAmount: 0,
       cryptoType: 'BCH',
+      fiatType: 'CAD',
       fiatAmount: 0,
-      fiatType: 'CAD'
+      cryptoAmount: 0,
+      cryptoPrice: 0
     }
   }
 
@@ -51,11 +51,15 @@ export default class Cashier extends React.Component {
 
   handleClick(event) {
     let payAmount = parseFloat(event.target.value);
+    console.log(payAmount);
     if (typeof payAmount !== "number" || payAmount === 0) {
-      this.setState({ fiatAmount: 0 });
+      this.setState({ fiatAmount: 0 }, async() => {
+        await this.calculateCryptoAmount();
+      });
     }
-    this.setState({ fiatAmount: payAmount });
-    this.calculateCryptoAmount();
+    this.setState({ fiatAmount: payAmount }, async() => {
+      await this.calculateCryptoAmount();
+    });
   }
 
   sendSocketIO(msg) {
@@ -64,18 +68,23 @@ export default class Cashier extends React.Component {
   }
 
   toggleCryptoType(e) {
-    this.setState({ cryptoType: e.target.value });
-    this.calculateCryptoAmount();
     console.log(e.target.value);
-    switch(this.state.cryptoType) {
+    const jsonData = this.state.jsonData;
+    switch(e.target.value) {
       case 'BTC':
-        this.setState({ cryptoPrice: this.state.jsonData.BTC.CAD});
+        this.setState({ cryptoType: 'BTC', cryptoPrice: jsonData.BTC.CAD}, async() => {
+          await this.calculateCryptoAmount();
+        });
         break;
       case 'BCH':
-        this.setState({ cryptoPrice: this.state.jsonData.BCH.CAD});
+        this.setState({ cryptoType: 'BCH', cryptoPrice: jsonData.BCH.CAD}, async() => {
+          await this.calculateCryptoAmount();
+        });
         break;
       case 'ETH':
-        this.setState({ cryptoPrice: this.state.jsonData.ETH.CAD});
+        this.setState({ cryptoType: 'ETH', cryptoPrice: jsonData.ETH.CAD}, async() => {
+          await this.calculateCryptoAmount();
+        });
         break;
       default:
         console.log('nothing');
@@ -115,12 +124,12 @@ export default class Cashier extends React.Component {
           </select>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
           <button onClick={this.updatePrices}>Update Price</button>
-          <button type="button" onClick={() => this.sendSocketIO([this.state.fiatType, this.state.cryptoPrice, this.state.fiatAmount, this.state.cryptoAmount, payQRAddress21])}>
+          <button type="button" onClick={() => this.sendSocketIO([this.state.cryptoType, this.state.fiatType, this.state.cryptoAmount, this.state.fiatAmount, this.state.cryptoPrice, payQRAddress21])}>
             Pay Now
           </button>
-          <p>{this.state.cryptoPrice}</p>
-          <p>{this.state.cryptoAmount}</p>
-          <p>{this.state.fiatAmount}</p>
+          <p>$ {this.state.cryptoPrice} {this.state.fiatType} / {this.state.cryptoType}</p>
+          <p>{this.state.cryptoAmount} {this.state.cryptoType}</p>
+          <p>$ {this.state.fiatAmount} {this.state.fiatType}</p>
         </div>
       </div>
     );

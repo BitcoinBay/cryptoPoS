@@ -94,7 +94,9 @@ export default class Cashier extends React.Component {
   updatePrices() {
     axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH&tsyms=USD,EUR,CAD&api_key={${api_key}}`)
       .then((res) => {
-        this.setState({ jsonData: res.data });
+        this.setState({ jsonData: res.data }, async() => {
+          console.log(this.state.jsonData);
+        });
       });
   }
 
@@ -121,6 +123,11 @@ export default class Cashier extends React.Component {
             <option value="BTC">BTC</option>
             <option value="BCH">BCH</option>
             <option value="ETH">ETH</option>
+          </select>
+          <select value={this.state.cryptoType} onChange={this.toggleCryptoType}>
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+            <option value="EUR">EUR</option>
           </select>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
           <button onClick={this.updatePrices}>Update Price</button>

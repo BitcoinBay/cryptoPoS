@@ -37,9 +37,19 @@ export default class Cashier extends React.Component {
 
   componentDidMount() {
     this.updatePrices();
+    /*
     setInterval(() => {
       this.updatePrices();
     }, 600000);
+    */
+    setInterval(() => {
+      let userAddress = BITBOX.Address.fromXPub(XPubKey, "0/14");
+      BITBOX.Address.details(userAddress).then((result) => {
+        console.log("Address: ", userAddress);
+        console.log("Confirmed balance: ", result.balance);
+        console.log("Unconfirmed balance: ", result.unconfirmedBalance);
+      });
+    }, 10000);
   }
 
   calculateCryptoAmount() {
@@ -105,7 +115,7 @@ export default class Cashier extends React.Component {
       amount: this.state.cryptoAmount,
       label: '#BitcoinBay',
     };
-    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "1");
+    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "0/14");
     let payQRAddress21 = BITBOX.BitcoinCash.encodeBIP21(XPubAddress, options);
 
     return (

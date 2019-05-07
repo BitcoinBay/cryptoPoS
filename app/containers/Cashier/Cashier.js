@@ -70,24 +70,22 @@ export default class Cashier extends React.Component {
   toggleCryptoType(e) {
     console.log(e.target.value);
     const jsonData = this.state.jsonData;
-    switch(e.target.value) {
-      case 'BTC':
+
+    if (e.target.value === 'BTC' && e.target.value === 'CAD') {
         this.setState({ cryptoType: 'BTC', cryptoPrice: jsonData.BTC.CAD}, async() => {
           await this.calculateCryptoAmount();
         });
-        break;
-      case 'BCH':
+    }
+
+    if (e.target.value === 'BCH' && e.target.value === 'CAD') {
         this.setState({ cryptoType: 'BCH', cryptoPrice: jsonData.BCH.CAD}, async() => {
           await this.calculateCryptoAmount();
         });
-        break;
-      case 'ETH':
+    }
+    if (e.target.value === 'BCH' && e.target.value === 'CAD') {
         this.setState({ cryptoType: 'ETH', cryptoPrice: jsonData.ETH.CAD}, async() => {
           await this.calculateCryptoAmount();
         });
-        break;
-      default:
-        console.log('nothing');
     }
   }
 
@@ -121,6 +119,11 @@ export default class Cashier extends React.Component {
             <option value="BTC">BTC</option>
             <option value="BCH">BCH</option>
             <option value="ETH">ETH</option>
+          </select>
+          <select value={this.state.fiatType} onChange={this.toggleCryptoType}>
+            <option value="BTC">USD</option>
+            <option value="BCH">CAD</option>
+            <option value="ETH">EUR</option>
           </select>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
           <button onClick={this.updatePrices}>Update Price</button>

@@ -8,7 +8,12 @@ import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import openSocket from 'socket.io-client';
 import * as BITBOXCli from "bitbox-sdk";
+
+// initialize BITBOX
 const BITBOX = new BITBOXCli.default({ restURL: "https://trest.bitcoin.com/v2/" });
+
+// initialize BITBOX socket
+const BITBOXsocket = new BITBOX.Socket({callback: () => {console.log('BITBOX socket connected')}, restURL: 'https://rest.bitcoin.com/'});
 
 import QRAddress21 from '../../components/QRAddress21';
 import './style.scss';
@@ -21,7 +26,8 @@ export default class Cashier extends React.Component {
   constructor() {
     super();
     this.handleClick = this.handleClick.bind(this);
-    this.updatePrices = this.updatePrices.bind(this);
+    this.updatePriceFeed = this.updatePriceFeed.bind(this);
+    this.updateAddressBalance = this.updateAddressBalance.bind(this);
     this.calculateCryptoAmount = this.calculateCryptoAmount.bind(this);
     this.sendSocketIO = this.sendSocketIO.bind(this);
     this.toggleCryptoType = this.toggleCryptoType.bind(this);
@@ -36,12 +42,19 @@ export default class Cashier extends React.Component {
   }
 
   componentDidMount() {
-    this.updatePrices();
+    this.updatePriceFeed();
+    /*
+    BITBOXsocket.listen('transactions', (message) => {
+      console.log('socket message: ', message);
+    })
+    */
+
     /*
     setInterval(() => {
-      this.updatePrices();
+      this.updatePriceFeed();
     }, 600000);
     */
+    /*
     setInterval(() => {
       let userAddress = BITBOX.Address.fromXPub(XPubKey, "0/14");
       BITBOX.Address.details(userAddress).then((result) => {
@@ -50,6 +63,7 @@ export default class Cashier extends React.Component {
         console.log("Unconfirmed balance: ", result.unconfirmedBalance);
       });
     }, 10000);
+    */
   }
 
   calculateCryptoAmount() {
@@ -61,7 +75,6 @@ export default class Cashier extends React.Component {
 
   handleClick(event) {
     let payAmount = parseFloat(event.target.value);
-    console.log(payAmount);
     if (typeof payAmount !== "number" || payAmount === 0) {
       this.setState({ fiatAmount: 0 }, async() => {
         await this.calculateCryptoAmount();
@@ -101,13 +114,19 @@ export default class Cashier extends React.Component {
     }
   }
 
-  updatePrices() {
+  updatePriceFeed() {
     axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETH&tsyms=USD,EUR,CAD&api_key={${api_key}}`)
       .then((res) => {
-        this.setState({ jsonData: res.data }, async() => {
-          console.log(this.state.jsonData);
-        });
+        this.setState({ jsonData: res.data });
       });
+  }
+
+  updateAddressBalance(addr) {
+    BITBOX.Address.details(addr).then((result) => {
+      console.log(result);
+    }, (err) => {
+      console.log(err);
+    });
   }
 
   render() {
@@ -115,7 +134,7 @@ export default class Cashier extends React.Component {
       amount: this.state.cryptoAmount,
       label: '#BitcoinBay',
     };
-    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "0/14");
+    let XPubAddress = BITBOX.Address.fromXPub(XPubKey, "0/0");
     let payQRAddress21 = BITBOX.BitcoinCash.encodeBIP21(XPubAddress, options);
 
     return (
@@ -134,13 +153,14 @@ export default class Cashier extends React.Component {
             <option value="BCH">BCH</option>
             <option value="ETH">ETH</option>
           </select>
-          <select value={this.state.cryptoType} onChange={this.toggleCryptoType}>
+          <select value={this.state.fiatType} onChange={this.toggleCryptoType}>
             <option value="USD">USD</option>
             <option value="CAD">CAD</option>
             <option value="EUR">EUR</option>
           </select>
           <input type="text" onChange={(e) => {this.handleClick(e)}} defaultValue={1} />
-          <button onClick={this.updatePrices}>Update Price</button>
+          <button type="button" onClick={() => {this.updateAddressBalance(XPubAddress)}} >Balance</button>
+          <button onClick={this.updatePriceFeed}>Update Price</button>
           <button type="button" onClick={() => this.sendSocketIO([this.state.cryptoType, this.state.fiatType, this.state.cryptoAmount, this.state.fiatAmount, this.state.cryptoPrice, payQRAddress21])}>
             Pay Now
           </button>

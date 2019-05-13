@@ -13,7 +13,7 @@ import * as BITBOXCli from "bitbox-sdk";
 const BITBOX = new BITBOXCli.default({ restURL: "https://trest.bitcoin.com/v2/" });
 
 // initialize BITBOX socket
-const BITBOXsocket = new BITBOX.Socket({callback: () => {console.log('BITBOX socket connected')}, restURL: 'https://rest.bitcoin.com/'});
+//const BITBOXsocket = new BITBOX.Socket({callback: () => {console.log('BITBOX socket connected')}, restURL: 'https://rest.bitcoin.com/'});
 
 import QRAddress21 from '../../components/QRAddress21';
 import './style.scss';
@@ -123,9 +123,9 @@ export default class Cashier extends React.Component {
 
   updateAddressBalance(addr) {
     BITBOX.Address.details(addr).then((result) => {
-      console.log(result);
+      console.log("Socket Response: ", result);
     }, (err) => {
-      console.log(err);
+      console.log("Socket Error: ", err);
     });
   }
 

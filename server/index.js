@@ -2,11 +2,15 @@
 
 const express = require('express');
 const { resolve } = require('path');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const cors = require("cors");
 const logger = require('./util//logger');
 
 const argv = require('./util/argv');
 const port = require('./util//port');
 const setup = require('./middlewares/frontendMiddleware');
+const api = require('./api');
 
 const app = express();
 const http = require('http').Server(app);
@@ -26,8 +30,15 @@ const customHost = argv.host || process.env.HOST;
 const host = customHost || null; // Let http.Server use its default IPv6/4 host
 const prettyHost = customHost || 'localhost';
 
+app.use(cors());
+app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+app.use('/api/', api);
+
 // Start your app.
-http.listen(port, host, (err) => {
+app.listen(port, host, (err) => {
   if (err) {
     return logger.error(err.message);
   }
